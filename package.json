@@ -10,6 +10,7 @@
   "jsdelivr": "dist/overtype.min.js",
   "exports": {
     ".": {
+      "types": "./dist/overtype.d.ts",
       "import": "./dist/overtype.esm.js",
       "require": "./dist/overtype.cjs",
       "browser": "./dist/overtype.iife.min.js"
