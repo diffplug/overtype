@@ -114,6 +114,7 @@ export interface OverTypeConstructor {
   destroyAll(): void;
   injectStyles(force?: boolean): void;
   setTheme(theme: string | Theme, customColors?: Partial<Theme['colors']>): void;
+  setCodeHighlighter(highlighter: ((code: string, language?: string) => string) | null): void;
   initGlobalListeners(): void;
   getTheme(name: string): Theme;
 }
