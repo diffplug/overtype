@@ -15,7 +15,7 @@ export function generateStyles(options = {}) {
     fontSize = '14px',
     lineHeight = 1.6,
     /* System-first, guaranteed monospaced; avoids Android 'ui-monospace' pitfalls */
-    fontFamily = '"SF Mono", SFMono-Regular, Menlo, Monaco, "Cascadia Code", Consolas, "Roboto Mono", "Noto Sans Mono", "Droid Sans Mono", "Ubuntu Mono", "DejaVu Sans Mono", "Liberation Mono", "Courier New", Courier, monospace',
+    fontFamily = 'inherit',
     padding = '20px',
     theme = null,
     mobile = {}
@@ -42,34 +42,12 @@ export function generateStyles(options = {}) {
   return `
     /* OverType Editor Styles */
     
-    /* Middle-ground CSS Reset - Prevent parent styles from leaking in */
-    .overtype-container * {
-      /* Box model - these commonly leak */
-      margin: 0 !important;
-      padding: 0 !important;
-      border: 0 !important;
-      
-      /* Layout - these can break our layout */
-      /* Don't reset position - it breaks dropdowns */
-      float: none !important;
-      clear: none !important;
-      
-      /* Typography - only reset decorative aspects */
-      text-decoration: none !important;
-      text-transform: none !important;
-      letter-spacing: normal !important;
-      
-      /* Visual effects that can interfere */
-      box-shadow: none !important;
-      text-shadow: none !important;
-      
-      /* Ensure box-sizing is consistent */
-      box-sizing: border-box !important;
-      
-      /* Keep inheritance for these */
-      /* font-family, color, line-height, font-size - inherit */
+    /* Preserve GitHub styles */
+    .overtype-preview pre.code-block {
+      font-family: ${fontFamily} !important;
+      font-size: ${fontSize} !important;
     }
-    
+
     /* Container base styles after reset */
     .overtype-container {
       display: grid !important;
@@ -258,7 +236,7 @@ export function generateStyles(options = {}) {
 
     /* Markdown element styling - NO SIZE CHANGES */
     .overtype-wrapper .overtype-preview .header {
-      font-weight: bold !important;
+      font-weight: normal !important;
     }
 
     /* Header colors */
@@ -277,7 +255,7 @@ export function generateStyles(options = {}) {
     .overtype-wrapper .overtype-preview h2,
     .overtype-wrapper .overtype-preview h3 {
       font-size: inherit !important;
-      font-weight: bold !important;
+      font-weight: normal !important;
       margin: 0 !important;
       padding: 0 !important;
       display: inline !important;
@@ -314,7 +292,7 @@ export function generateStyles(options = {}) {
     /* Bold text */
     .overtype-wrapper .overtype-preview strong {
       color: var(--strong, #ee964b) !important;
-      font-weight: bold !important;
+      font-weight: normal !important;
     }
 
     /* Italic text */
@@ -322,7 +300,7 @@ export function generateStyles(options = {}) {
       color: var(--em, #f95738) !important;
       text-decoration-color: var(--em, #f95738) !important;
       text-decoration-thickness: 1px !important;
-      font-style: italic !important;
+      font-style: normal !important;
     }
 
     /* Strikethrough text */
@@ -773,7 +751,7 @@ export function generateStyles(options = {}) {
       border-left: 4px solid var(--blockquote, #ddd) !important;
       padding-left: 1em !important;
       margin: 1em 0 !important;
-      font-style: italic !important;
+      font-style: normal !important;
     }
 
     /* Typography improvements in preview mode */
@@ -800,7 +778,7 @@ export function generateStyles(options = {}) {
     }
 
     .overtype-container.preview-mode .overtype-wrapper .overtype-preview em {
-      font-style: italic !important;
+      font-style: normal !important;
       color: inherit !important; /* Use parent text color */
     }
 
