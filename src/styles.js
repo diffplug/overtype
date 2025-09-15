@@ -46,6 +46,8 @@ export function generateStyles(options = {}) {
     .overtype-preview pre.code-block {
       font-family: ${fontFamily} !important;
       font-size: ${fontSize} !important;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     /* Container base styles after reset */
