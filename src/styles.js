@@ -84,7 +84,6 @@ export function generateStyles(options = {}) {
     
     .overtype-wrapper {
       position: relative !important; /* Override reset - needed for absolute children */
-      width: 100% !important;
       height: 100% !important; /* Take full height of grid cell */
       min-height: 60px !important; /* Minimum usable height */
       overflow: hidden !important;
