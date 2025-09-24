@@ -254,21 +254,6 @@ export class MarkdownParser {
 	}
 
 	/**
-	 * Parse links
-	 * @param {string} html - HTML with potential link markdown
-	 * @returns {string} HTML with link styling
-	 */
-	static parseLinks(html) {
-		return html.replace(/\[(.+?)\]\((.+?)\)/g, (match, text, url) => {
-			const anchorName = `--link-${this.linkIndex++}`;
-			// Sanitize URL to prevent XSS attacks
-			const safeUrl = this.sanitizeUrl(url);
-			// Use real href - pointer-events handles click prevention in normal mode
-			return `<a href="${safeUrl}" style="anchor-name: ${anchorName}"><span class="syntax-marker">[</span>${text}<span class="syntax-marker url-part">](${url})</span></a>`;
-		});
-	}
-
-	/**
 	 * Identify and protect sanctuaries (code and links) before parsing
 	 * @param {string} text - Text with potential markdown
 	 * @returns {Object} Object with protected text and sanctuary map
