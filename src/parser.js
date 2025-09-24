@@ -387,7 +387,7 @@ export class MarkdownParser {
 				// URL should NOT be processed for markdown - use it as-is
 				const anchorName = `--link-${this.linkIndex++}`;
 				const safeUrl = this.sanitizeUrl(sanctuary.url);
-				replacement = `<a href="${safeUrl}" style="anchor-name: ${anchorName}"><span class="syntax-marker">[</span>${processedLinkText}<span class="syntax-marker url-part">](${this.escapeHtml(sanctuary.url)})</span></a>`;
+				replacement = `<a href="${safeUrl}" style="anchor-name: ${anchorName}"><span class="syntax-marker">[</span><span class="link-text">${processedLinkText}</span><span class="syntax-marker">](</span><span class="url-part">${this.escapeHtml(sanctuary.url)}</span><span class="syntax-marker">)</span></a>`;
 			}
 
 			html = html.replace(placeholder, replacement);

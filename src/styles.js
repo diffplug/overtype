@@ -352,15 +352,16 @@ export function generateStyles(options = {}) {
     }
 
     /* Links */
-    .overtype-wrapper .overtype-preview a {
-      color: var(--link, #0d3b66) !important;
-      text-decoration: underline !important;
-      font-weight: normal !important;
-    }
 
-    .overtype-wrapper .overtype-preview a:hover {
-      text-decoration: underline !important;
-      color: var(--link, #0d3b66) !important;
+    /* underline only the actual word(s) */
+    .overtype-preview a .link-text {
+      text-decoration: underline;
+    }
+    /* markers never underlined */
+    .overtype-preview a .syntax-marker { text-decoration: none; }
+    /* light-blue on the url text */
+    .overtype-wrapper .overtype-preview .url-part {
+      color: rgb(142, 182, 241);
     }
 
     /* Lists - no list styling */
