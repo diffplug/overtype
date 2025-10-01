@@ -364,6 +364,11 @@ export function generateStyles(options = {}) {
       color: rgb(142, 182, 241);
     }
 
+    .overtype-preview .hashtag {
+      color: var(--link, #0066cc) !important;
+      text-decoration: underline !important;
+    }
+
     /* Lists - no list styling */
     .overtype-wrapper .overtype-preview ul,
     .overtype-wrapper .overtype-preview ol {
