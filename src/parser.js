@@ -687,11 +687,15 @@ export class MarkdownParser {
 				if (currentCodeBlock._codeContent.length > 0) {
 					currentCodeBlock._codeContent += "\n";
 				}
-				// Get the actual text content, preserving spaces
-				const lineText = child.textContent.replace(/\u00A0/g, " "); // \u00A0 is nbsp
-				currentCodeBlock._codeContent += lineText;
+				// Use innerHTML to preserve HTML entities (like &lt; &gt;), only decode nbsp
+				const lineHtml = child.innerHTML.replace(/&nbsp;/g, " ");
+				currentCodeBlock._codeContent += lineHtml;
 
 				// Also add to the code element (fallback if no highlighter)
+				// Need to decode entities for textContent display
+				const temp = document.createElement('div');
+				temp.innerHTML = lineHtml;
+				const lineText = temp.textContent || temp.innerText || '';
 				if (codeElement.textContent.length > 0) {
 					codeElement.textContent += "\n";
 				}
