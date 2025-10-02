@@ -188,6 +188,20 @@ export class MarkdownParser {
 	}
 
 	/**
+	 * Parse bare HTTP/HTTPS URLs
+	 * @param {string} html - HTML with potential bare URLs
+	 * @returns {string} HTML with styled URLs
+	 */
+	static parseAutoLinks(html) {
+		// Match http:// or https:// URLs
+		// Stop at whitespace or common punctuation that typically ends a URL
+		return html.replace(
+			/(?<!["'])(https?:\/\/[^\s<>"']+)/g,
+			'<span class="autolink">$1</span>'
+		);
+	}
+
+	/**
 	 * Parse strikethrough text
 	 * Supports both single (~) and double (~~) tildes, but rejects 3+ tildes
 	 * @param {string} html - HTML with potential strikethrough markdown
@@ -428,6 +442,7 @@ export class MarkdownParser {
 		html = this.parseBold(html);
 		html = this.parseItalic(html);
 		html = this.parseHashtagNumerals(html);
+		html = this.parseAutoLinks(html);
 
 		// Step 3: Restore and transform sanctuaries
 		html = this.restoreAndTransformSanctuaries(html, sanctuaries);

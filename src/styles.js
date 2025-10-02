@@ -369,6 +369,11 @@ export function generateStyles(options = {}) {
       text-decoration: underline !important;
     }
 
+    .overtype-preview .autolink {
+      color: var(--link, #0066cc) !important;
+      text-decoration: underline !important;
+    }
+
     /* Lists - no list styling */
     .overtype-wrapper .overtype-preview ul,
     .overtype-wrapper .overtype-preview ol {
