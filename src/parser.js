@@ -44,6 +44,30 @@ export class MarkdownParser {
 	}
 
 	/**
+	 * Unescape HTML entities
+	 * @param {string} html - HTML with entities to unescape
+	 * @returns {string} Unescaped text
+	 */
+	static unescapeHtml(html) {
+		// In browser, use DOM method
+		if (typeof document !== "undefined") {
+			const temp = document.createElement("div");
+			temp.innerHTML = html;
+			return temp.textContent || temp.innerText || "";
+		}
+		// In Node.js, use manual replacement
+		const map = {
+			"&amp;": "&",
+			"&lt;": "<",
+			"&gt;": ">",
+			"&quot;": '"',
+			"&#39;": "'",
+			"&#x27;": "'",
+		};
+		return html.replace(/&(?:amp|lt|gt|quot|#39|#x27);/g, (m) => map[m] || m);
+	}
+
+	/**
 	 * Preserve leading spaces as non-breaking spaces
 	 * @param {string} html - HTML string
 	 * @param {string} originalLine - Original line with spaces
@@ -655,8 +679,12 @@ export class MarkdownParser {
 							currentCodeBlock._codeContent
 						) {
 							try {
+								// Decode HTML entities before passing to highlighter
+								// Highlighter expects plain text and will escape HTML properly
+								const plainText = this.unescapeHtml(currentCodeBlock._codeContent);
+
 								const highlightedCode = highlighter(
-									currentCodeBlock._codeContent,
+									plainText,
 									currentCodeBlock._language || "",
 								);
 								currentCodeBlock._codeElement.innerHTML = highlightedCode;
@@ -869,7 +897,10 @@ export class MarkdownParser {
 				const highlighter = instanceHighlighter || this.codeHighlighter;
 				if (highlighter) {
 					try {
-						highlightedContent = highlighter(codeContent, lang);
+						// Decode HTML entities before passing to highlighter
+						// Highlighter expects plain text and will escape HTML properly
+						const plainText = this.unescapeHtml(codeContent);
+						highlightedContent = highlighter(plainText, lang);
 					} catch (error) {
 						console.warn("Code highlighting failed:", error);
 						// Fall back to original content
