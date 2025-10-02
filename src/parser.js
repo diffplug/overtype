@@ -283,7 +283,7 @@ export class MarkdownParser {
 	}
 
 	/**
-	 * Identify and protect sanctuaries (code and links) before parsing
+	 * Identify and protect sanctuaries (code, links, and HTML tags) before parsing
 	 * @param {string} text - Text with potential markdown
 	 * @returns {Object} Object with protected text and sanctuary map
 	 */
@@ -292,7 +292,7 @@ export class MarkdownParser {
 		let sanctuaryCounter = 0;
 		let protectedText = text;
 
-		// Create a map to track protected regions (URLs should not be processed)
+		// Create a map to track protected regions
 		const protectedRegions = [];
 
 		// First, find all links and mark their URL regions as protected
@@ -308,7 +308,7 @@ export class MarkdownParser {
 			protectedRegions.push({ start: urlStart, end: urlEnd });
 		}
 
-		// Now protect inline code, but skip if it's inside a protected region (URL)
+		// Second, protect inline code, but skip if it's inside a protected region (URL)
 		const codeRegex = /(?<!`)(`+)(?!`)((?:(?!\1).)+?)(\1)(?!`)/g;
 		let codeMatch;
 		const codeMatches = [];
@@ -344,13 +344,56 @@ export class MarkdownParser {
 				content: codeInfo.content,
 				closeTicks: codeInfo.closeTicks,
 			});
+
+			// Track this code region as protected (for HTML tag protection)
+			protectedRegions.push({
+				start: codeInfo.index,
+				end: codeInfo.index + codeInfo.match.length,
+			});
+
 			protectedText =
 				protectedText.substring(0, codeInfo.index) +
 				placeholder +
 				protectedText.substring(codeInfo.index + codeInfo.match.length);
 		});
 
-		// Then protect links - they can contain sanctuary placeholders for code but not raw code
+		// Third, protect HTML tags, but skip if inside code spans
+		const htmlTagRegex = /&lt;(?:[^&]|&(?:quot|#39|amp|lt|gt);)*?&gt;/g;
+		let htmlMatch;
+		const htmlMatches = [];
+
+		while ((htmlMatch = htmlTagRegex.exec(text)) !== null) {
+			const htmlStart = htmlMatch.index;
+			const htmlEnd = htmlMatch.index + htmlMatch[0].length;
+
+			// Check if this HTML tag is inside a protected code region
+			const inProtectedRegion = protectedRegions.some(
+				(region) => htmlStart >= region.start && htmlEnd <= region.end,
+			);
+
+			if (!inProtectedRegion) {
+				htmlMatches.push({
+					match: htmlMatch[0],
+					index: htmlMatch.index,
+				});
+			}
+		}
+
+		// Replace HTML matches from end to start to preserve indices
+		htmlMatches.sort((a, b) => b.index - a.index);
+		htmlMatches.forEach((htmlInfo) => {
+			const placeholder = `\uE000${sanctuaryCounter++}\uE001`;
+			sanctuaries.set(placeholder, {
+				type: "htmlTag",
+				original: htmlInfo.match,
+			});
+			protectedText =
+				protectedText.substring(0, htmlInfo.index) +
+				placeholder +
+				protectedText.substring(htmlInfo.index + htmlInfo.match.length);
+		});
+
+		// Finally, protect links - they can contain sanctuary placeholders for code but not raw code
 		protectedText = protectedText.replace(
 			/\[([^\]]+)\]\(([^)]+)\)/g,
 			(match, linkText, url) => {
@@ -386,7 +429,10 @@ export class MarkdownParser {
 			const sanctuary = sanctuaries.get(placeholder);
 			let replacement;
 
-			if (sanctuary.type === "code") {
+			if (sanctuary.type === "htmlTag") {
+				// Transform HTML tag sanctuary to styled HTML
+				replacement = `<span class="html-tag">${sanctuary.original}</span>`;
+			} else if (sanctuary.type === "code") {
 				// Transform code sanctuary to HTML
 				replacement = `<code><span class="syntax-marker">${sanctuary.openTicks}</span>${sanctuary.content}<span class="syntax-marker">${sanctuary.closeTicks}</span></code>`;
 			} else if (sanctuary.type === "link") {

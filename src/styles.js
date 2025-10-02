@@ -374,6 +374,10 @@ export function generateStyles(options = {}) {
       text-decoration: underline !important;
     }
 
+    .overtype-preview .html-tag {
+      color: var(--html-tag, #22863a) !important;
+    }
+
     /* Lists - no list styling */
     .overtype-wrapper .overtype-preview ul,
     .overtype-wrapper .overtype-preview ol {
