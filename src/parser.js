@@ -173,6 +173,21 @@ export class MarkdownParser {
 	}
 
 	/**
+	 * Parse GitHub-style issue/PR references
+	 * @param {string} html - HTML with potential GitHub references
+	 * @returns {string} HTML with styled GitHub references
+	 */
+	static parseHashtagNumerals(html) {
+		// Match #123 patterns with word boundaries
+		// (?<![&#\w]) ensures # is not in the middle of a word or part of an HTML entity
+		// (?!\w) ensures the number is followed by a non-word character or end
+		return html.replace(
+			/(?<![&#\w])(#\d+)(?!\w)/g,
+			'<span class="hashtag">$1</span>'
+		);
+	}
+
+	/**
 	 * Parse strikethrough text
 	 * Supports both single (~) and double (~~) tildes, but rejects 3+ tildes
 	 * @param {string} html - HTML with potential strikethrough markdown
@@ -385,9 +400,10 @@ export class MarkdownParser {
 
 				// Transform link sanctuary to HTML
 				// URL should NOT be processed for markdown - use it as-is
+				// Note: sanctuary.url is already escaped since it came from escaped HTML
 				const anchorName = `--link-${this.linkIndex++}`;
 				const safeUrl = this.sanitizeUrl(sanctuary.url);
-				replacement = `<a href="${safeUrl}" style="anchor-name: ${anchorName}"><span class="syntax-marker">[</span><span class="link-text">${processedLinkText}</span><span class="syntax-marker">](</span><span class="url-part">${this.escapeHtml(sanctuary.url)}</span><span class="syntax-marker">)</span></a>`;
+				replacement = `<a href="${safeUrl}" style="anchor-name: ${anchorName}"><span class="syntax-marker">[</span><span class="link-text">${processedLinkText}</span><span class="syntax-marker">](</span><span class="url-part">${sanctuary.url}</span><span class="syntax-marker">)</span></a>`;
 			}
 
 			html = html.replace(placeholder, replacement);
@@ -411,6 +427,7 @@ export class MarkdownParser {
 		html = this.parseStrikethrough(html);
 		html = this.parseBold(html);
 		html = this.parseItalic(html);
+		html = this.parseHashtagNumerals(html);
 
 		// Step 3: Restore and transform sanctuaries
 		html = this.restoreAndTransformSanctuaries(html, sanctuaries);
